@@ -21,6 +21,7 @@ class Helpers
   addDelegation: (event, fn, useCapture = false) =>
     document.body.addEventListener event, (event) =>
       element = event.target
+      event.preventDefault()
 
       while element and not element.dataset?.playground
         element = element.parentNode
@@ -50,8 +51,6 @@ class JSFiddlePost extends Helpers
   setupDefaults: =>
     @collectSnippets()
     @attachEvents()
-
-    console.log @snippets
 
   attachEvents: =>
     @addDelegation "click", @createForm
