@@ -73,12 +73,12 @@ class JSFiddlePost extends Helpers
 
     @createInputsFromParams key, value for key, value of snippet.params
 
-    # there's a chance some browsers need the form to be injected
-    # document.body.appendChild form
+    # Firefox needs the form to be injected into the DOM before you can submit
+    document.body.appendChild @form
     @form.submit()
 
     # remove the form just so it's more sanitary around here
-    # form.parentNode.removeChild form
+    @form.parentNode.removeChild @form
 
   collectSnippets: =>
     @forEach @elements.playground, @collectEachSnippet
