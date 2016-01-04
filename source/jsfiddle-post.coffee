@@ -1,12 +1,10 @@
-# TODO: make this safe - currently overwrites prototype
-NodeList::eachElement = Array::forEach
-
 class Helpers
 
-  del: (obj, key) ->
-    val =  obj[key]
-    delete obj[key]
-    val
+  forEach: (array, callback, scope = this) ->
+    i = 0
+    while i < array.length
+      callback.call scope, array[i], i
+      i++
 
   extend: (object, properties) ->
     for key, val of properties
@@ -58,32 +56,32 @@ class JSFiddlePost extends Helpers
   attachEvents: =>
     @addDelegation "click", @createForm
 
+  createInputsFromParams: (key, value) ->
+    if value
+      input       = document.createElement "input"
+      input.name  = key
+      input.value = value
+      @form.appendChild input
+
   createForm: (element) =>
-    group   = element.dataset.playgroundFromGroup
-    snippet = @snippets[group]
+    group        = element.dataset.playgroundFromGroup
+    snippet      = @snippets[group]
+    @form        = document.createElement "form"
+    @form.method = "post"
+    @form.action = @createUrl snippet
+    @form.target = "_blank"
 
-    form = document.createElement "form"
-    form.method = "post"
-    form.action = @createUrl snippet
-    form.target = "_blank"
-
-    for key, value of snippet.params
-      if value
-        input = document.createElement "input"
-        input.name  = key
-        input.value = value
-
-        form.appendChild input
+    @createInputsFromParams key, value for key, value of snippet.params
 
     # there's a chance some browsers need the form to be injected
     # document.body.appendChild form
-    form.submit()
+    @form.submit()
 
     # remove the form just so it's more sanitary around here
     # form.parentNode.removeChild form
 
   collectSnippets: =>
-    @elements.playground.eachElement @collectEachSnippet
+    @forEach @elements.playground, @collectEachSnippet
 
   collectEachSnippet: (element) =>
     @currentSnippet = {}
@@ -99,13 +97,15 @@ class JSFiddlePost extends Helpers
     url =
       framework:     element.dataset.playgroundFramework        or null
       version:       element.dataset.playgroundFrameworkVersion or null
-      dependencies:  element.dataset.playgroundDependencies     or ""
+      dependencies:  element.dataset.playgroundDependencies     or null
 
     panes = document.querySelectorAll "*[data-playground-group=#{group}]"
-    panes.eachElement @collectEachCode
-    @snippets[group]           = {}
-    @snippets[group]["url"]    = url
-    @snippets[group]["params"] = @merge params, @currentSnippet
+    @forEach panes, @collectEachCode
+
+    # save all data in the snippet group
+    @snippets[group] =
+      url:    url
+      params: @merge params, @currentSnippet
 
   # collect all code snippets and push into the main confi object
   collectEachCode: (element) =>
@@ -125,18 +125,13 @@ class JSFiddlePost extends Helpers
     [framework, version, dependencies] = [snippet.url.framework, snippet.url.version, snippet.url.dependencies]
 
     # compose the framework + version part of the URL
-    if not framework
-      fwv = "library/pure"
-    else
-      fwv = "#{framework}/#{version}"
+    fwv  = if not framework then "library/pure" else "#{framework}/#{version}"
 
     # dependencies part of the URL
-    if not dependencies
-      deps = dependencies
-    else
-      deps = "dependencies/#{dependencies}/"
+    deps = if not dependencies then "" else "dependencies/#{dependencies}/"
 
-    url = "//jsfiddle.net/api/post/#{fwv}/#{deps}"
+    # create the full url
+    url  = "//jsfiddle.net/api/post/#{fwv}/#{deps}"
 
   # translate subtype to its ID
   translateLanguageToId: (scope, lookup) ->
