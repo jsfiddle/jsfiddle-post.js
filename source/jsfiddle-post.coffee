@@ -57,10 +57,10 @@ class JSFiddlePost extends Helpers
 
   createInputsFromParams: (key, value) ->
     if value
-      input       = document.createElement "input"
-      input.name  = key
-      input.value = value
-      @form.appendChild input
+      field           = document.createElement "textarea"
+      field.name      = key
+      field.innerHTML = value
+      @form.appendChild field
 
   createForm: (element) =>
     group        = element.dataset.playgroundFromGroup
@@ -92,7 +92,7 @@ class JSFiddlePost extends Helpers
       resources:     element.dataset.playgroundResources        or null
       dtd:           element.dataset.playgroundDtd              or "html 5"
       wrap:          element.dataset.playgroundWrap             or "l"
-      normalize_css: element.dataset.playgroundNormalize        or "yes"
+      normalize_css: element.dataset.playgroundNormalize        or "no"
     url =
       framework:     element.dataset.playgroundFramework        or null
       version:       element.dataset.playgroundFrameworkVersion or null
@@ -114,7 +114,7 @@ class JSFiddlePost extends Helpers
     # translate subtype to base type, like:
     # scss -> css, babel -> javascript
     type = @translateLanguageToBase subtype
-    @currentSnippet[type] = @cleanupCode code
+    @currentSnippet[type] = code
 
     # store subtype ID for panel
     @currentSnippet["panel_#{type}"] = @translateLanguageToId type, subtype
@@ -142,12 +142,6 @@ class JSFiddlePost extends Helpers
     for key, value of @languages
       base = key if value.indexOf(lookup) >= 0
     base
-
-  # clean up entities
-  cleanupCode: (code) ->
-    text = document.createElement "textarea"
-    text.innerHTML = code
-    text.value
 
 document.addEventListener "DOMContentLoaded", ->
   new JSFiddlePost

@@ -7,7 +7,7 @@ renders the code hosted on a website in JSFiddle.
 
 ## Setup
 
-1. Put `<script src="//jsfiddle.net/js/jsfiddle-post.js"></script>` somewhere on your website
+1. Put `<script defer src="//jsfiddle.net/js/jsfiddle-post.js"></script>` somewhere on your website
 2. Add special attributes to your elements containing code:
 
    ```html
