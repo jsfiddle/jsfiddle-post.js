@@ -2,12 +2,12 @@
 
 As opposed to [JSFiddle embeds](https://medium.com/jsfiddle-updates/new-jsfiddle-embeds-93ab7a51ee11)
 where the code is fully hosted on JSFiddle and embedded on a website,
-`jsfiddle-post.js` (basd on our [Post API](http://jsfiddle.net)) simply sends and
+`jsfiddle-post.js` (basd on our [Post API](http://doc.jsfiddle.net/api/post.html)) simply sends and
 renders the code hosted on a website in JSFiddle.
 
 ## Setup
 
-1. Put `<script src="//jsfiddle.net/jsfiddle-post.js"></script>` somewhere on your website
+1. Put `<script src="//jsfiddle.net/js/jsfiddle-post.js"></script>` somewhere on your website
 2. Add special attributes to your elements containing code:
 
    ```html
